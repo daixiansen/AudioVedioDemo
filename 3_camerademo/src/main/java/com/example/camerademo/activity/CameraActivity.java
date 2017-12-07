@@ -11,12 +11,12 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageButton;
 
 import com.example.camerademo.R;
-import com.example.camerademo.camera.CameraInterface;
+import com.example.camerademo.camera.CameraHolder;
 import com.example.camerademo.camera.preview.CameraSurfaceView;
 import com.example.camerademo.util.DisplayUtil;
 
 
-public class CameraActivity extends AppCompatActivity implements CameraInterface.CamOpenOverCallback {
+public class CameraActivity extends AppCompatActivity implements CameraHolder.CamOpenOverCallback {
     private static final String TAG = CameraActivity.class.getSimpleName();
     CameraSurfaceView surfaceView = null;
     ImageButton shutterBtn;
@@ -40,7 +40,7 @@ public class CameraActivity extends AppCompatActivity implements CameraInterface
         new Thread(new Runnable() {
             @Override
             public void run() {
-                CameraInterface.getInstance().doOpenCamera(CameraActivity.this);
+                CameraHolder.getInstance().doOpenCamera(CameraActivity.this);
             }
         }).start();
     }
@@ -77,7 +77,7 @@ public class CameraActivity extends AppCompatActivity implements CameraInterface
     public void cameraHasOpened() {
         // TODO Auto-generated method stub
         SurfaceHolder holder = surfaceView.getSurfaceHolder();
-        CameraInterface.getInstance().doStartPreview(holder, previewRate);
+        CameraHolder.getInstance().doStartPreview(holder, previewRate);
     }
 
     private class BtnListeners implements OnClickListener {
@@ -87,7 +87,7 @@ public class CameraActivity extends AppCompatActivity implements CameraInterface
             // TODO Auto-generated method stub
             switch (v.getId()) {
                 case R.id.btn_shutter:
-                    CameraInterface.getInstance().doTakePicture();
+                    CameraHolder.getInstance().doTakePicture();
                     break;
                 default:
                     break;

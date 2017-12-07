@@ -124,4 +124,36 @@ public class CamParaUtil {
             Log.i(TAG, "focusModes--" + mode);
         }
     }
+
+
+    /**
+     * 打印相机支持的数据格式
+     *
+     * @param params
+     */
+    public void printSupportedPreviewFormats(Camera.Parameters params) {
+        List<Integer> previewFormats = params.getSupportedPreviewFormats();
+        for (Integer previewFormat : previewFormats) {
+            Log.i(TAG, "previewFormat--" + previewFormat);
+        }
+    }
+
+    /**
+     * 打印摄像头信息
+     */
+    public static void printCameraInfo() {
+        Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
+        Log.i("jw", "number:" + Camera.getNumberOfCameras());
+        for (int i = 0; i < Camera.getNumberOfCameras(); i++) {
+            Camera.getCameraInfo(i, cameraInfo);
+            Log.i("jw", "oritation:" + cameraInfo.orientation + ",facing:" + cameraInfo.facing);
+            if (cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+
+            } else if (cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_BACK) {
+
+            }
+        }
+    }
+
+
 }

@@ -2,6 +2,7 @@ package com.example.camerademo.camera;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.ImageFormat;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
@@ -17,36 +18,31 @@ import com.example.camerademo.util.ImageUtil;
 import java.io.IOException;
 import java.util.List;
 
-public class CameraInterface {
-    private static final String TAG = CameraInterface.class.getSimpleName();
+public class CameraHolder {
+    private static final String TAG = CameraHolder.class.getSimpleName();
     private Camera mCamera;
     private Camera.Parameters mParams;
     private boolean isPreviewing = false;
     private float mPreviwRate = -1f;
-//    private static CameraInterface mCameraInterface;
+    private static CameraHolder mInstance;
 
     public interface CamOpenOverCallback {
-        public void cameraHasOpened();
+        void cameraHasOpened();
     }
 
-    private CameraInterface() {
+    private CameraHolder() {
 
     }
 
-    public static CameraInterface getInstance() {
-        return CameraInterfaceHolder.cameraInterface;
+
+    public static synchronized CameraHolder getInstance() {
+        if (mInstance == null) {
+            mInstance = new CameraHolder();
+        }
+        return mInstance;
     }
 
-    private static class CameraInterfaceHolder {
-        private static final CameraInterface cameraInterface = new CameraInterface();
-    }
-
-//    public static synchronized CameraInterface getInstance() {
-//        if (mCameraInterface == null) {
-//            mCameraInterface = new CameraInterface();
-//        }
-//        return mCameraInterface;
-//    }
+    private int mCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
 
     /**
      * 打开Camera
@@ -55,7 +51,9 @@ public class CameraInterface {
      */
     public void doOpenCamera(CamOpenOverCallback callback) {
         Log.i(TAG, "Camera open....");
-        mCamera = Camera.open();
+        //   有参 0代表后置摄像头，1代表前置摄像头。
+        mCamera = Camera.open(mCameraId);
+        CamParaUtil.printCameraInfo();
         Log.i(TAG, "Camera open over....");
         callback.cameraHasOpened();
     }
@@ -75,11 +73,15 @@ public class CameraInterface {
         if (mCamera != null) {
 
             mParams = mCamera.getParameters();
-            mParams.setPictureFormat(PixelFormat.JPEG);//设置拍照后存储的图片格式
+            //设置拍照后存储的图片格式
+            mParams.setPictureFormat(PixelFormat.JPEG);
+            // 设置预览格式  一般是 NV21 YV12
+            mParams.setPreviewFormat(ImageFormat.NV21);
 
             // 打印 相机硬件支持的所有预览和拍摄尺寸
             CamParaUtil.getInstance().printSupportPictureSize(mParams);
             CamParaUtil.getInstance().printSupportPreviewSize(mParams);
+            CamParaUtil.getInstance().printSupportedPreviewFormats(mParams);
 
 
 
@@ -102,6 +104,8 @@ public class CameraInterface {
 
             CamParaUtil.getInstance().printSupportFocusMode(mParams);
             List<String> focusModes = mParams.getSupportedFocusModes();
+
+            // 设置对焦模式
             if (focusModes.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)) {
                 mParams.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
             }
@@ -109,7 +113,10 @@ public class CameraInterface {
 
             try {
                 mCamera.setPreviewDisplay(holder);
-                mCamera.startPreview();//开启预览
+                //设置预览回调
+                mCamera.setPreviewCallback(mPreviewCallBack);
+                //开启预览
+                mCamera.startPreview();
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -125,6 +132,17 @@ public class CameraInterface {
                     + "Height = " + mParams.getPictureSize().height);
         }
     }
+
+
+    /**
+     * 预览回调
+     */
+    private Camera.PreviewCallback mPreviewCallBack = new Camera.PreviewCallback() {
+        @Override
+        public void onPreviewFrame(byte[] bytes, Camera camera) {
+
+        }
+    };
 
     /**
      * 停止预览，释放Camera

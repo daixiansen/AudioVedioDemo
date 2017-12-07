@@ -7,7 +7,7 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import com.example.camerademo.camera.CameraInterface;
+import com.example.camerademo.camera.CameraHolder;
 
 public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Callback {
     private static final String TAG =CameraSurfaceView.class.getSimpleName();
@@ -41,7 +41,7 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
     public void surfaceDestroyed(SurfaceHolder holder) {
         // TODO Auto-generated method stub
         Log.i(TAG, "surfaceDestroyed...");
-        CameraInterface.getInstance().doStopCamera();
+        CameraHolder.getInstance().doStopCamera();
     }
 
     public SurfaceHolder getSurfaceHolder() {
