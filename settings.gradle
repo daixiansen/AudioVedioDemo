@@ -1,0 +1,1 @@
+include ':2_audioDemo', ':1_surfaceView', ':3_camerademo', ':app', ':codec', ':ffmpeg'
