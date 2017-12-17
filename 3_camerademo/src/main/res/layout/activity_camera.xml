@@ -23,4 +23,14 @@
         android:background="@drawable/btn_shutter_background" />
 
 
+    <ImageView
+        android:id="@+id/iv_camera"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        android:src="@drawable/live_room_take_poster_camera_selector" />
+
+
 </RelativeLayout>

@@ -7,7 +7,6 @@ import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.hardware.Camera.ShutterCallback;
-import android.hardware.Camera.Size;
 import android.util.Log;
 import android.view.SurfaceHolder;
 
@@ -54,8 +53,21 @@ public class CameraHolder {
         //   有参 0代表后置摄像头，1代表前置摄像头。
         mCamera = Camera.open(mCameraId);
         CamParaUtil.printCameraInfo();
-        Log.i(TAG, "Camera open over....");
+        Log.e(TAG, "Camera open over....");
         callback.cameraHasOpened();
+    }
+
+    /**
+     * 翻转摄像头
+     */
+    public void cameraChange(CamOpenOverCallback callback){
+        if (mCameraId == Camera.CameraInfo.CAMERA_FACING_BACK) {
+            mCameraId = Camera.CameraInfo.CAMERA_FACING_FRONT;
+        } else {
+            mCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
+        }
+        doStopCamera();
+        doOpenCamera(callback);
     }
 
     /**
@@ -65,7 +77,7 @@ public class CameraHolder {
      * @param previewRate
      */
     public void doStartPreview(SurfaceHolder holder, float previewRate) {
-        Log.i(TAG, "doStartPreview...");
+        Log.e(TAG, "doStartPreview...");
         if (isPreviewing) {
             mCamera.stopPreview();
             return;
@@ -88,15 +100,16 @@ public class CameraHolder {
             //设置PreviewSize和PictureSize
 
             // 相机硬件提供的拍摄帧数据尺寸
-            Size pictureSize = CamParaUtil.getInstance().getPropPictureSize(
-                    mParams.getSupportedPictureSizes(), previewRate, 800);
+            Camera.Size pictureSize = CamParaUtil.getInstance().getPropPictureSize(
+                    mParams.getSupportedPictureSizes(), previewRate, 1280);
             mParams.setPictureSize(pictureSize.width, pictureSize.height);
+//            mParams.setPictureSize(1280, 720);
 
 
             // 相机硬件提供的预览帧数据尺寸
-            Size previewSize = CamParaUtil.getInstance().getPropPreviewSize(
-                    mParams.getSupportedPreviewSizes(), previewRate, 800);
-            mParams.setPreviewSize(previewSize.width, previewSize.height);
+            Camera.Size previewSize = CamParaUtil.getInstance().getPropPreviewSize(
+                    mParams.getSupportedPreviewSizes(), previewRate, 1280);
+//            mParams.setPreviewSize(1280,720);
 
 
             // 设置相机预览方向
@@ -106,6 +119,10 @@ public class CameraHolder {
             List<String> focusModes = mParams.getSupportedFocusModes();
 
             // 设置对焦模式
+            if (focusModes.contains(
+                    Camera.Parameters.FOCUS_MODE_AUTO)) {
+                mParams.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+            }
             if (focusModes.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)) {
                 mParams.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
             }
@@ -128,6 +145,7 @@ public class CameraHolder {
             mParams = mCamera.getParameters(); //重新get一次
             Log.i(TAG, "最终设置:PreviewSize--With = " + mParams.getPreviewSize().width
                     + "Height = " + mParams.getPreviewSize().height);
+
             Log.i(TAG, "最终设置:PictureSize--With = " + mParams.getPictureSize().width
                     + "Height = " + mParams.getPictureSize().height);
         }
