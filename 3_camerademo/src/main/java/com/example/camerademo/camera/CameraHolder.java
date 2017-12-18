@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
 import android.graphics.PixelFormat;
+import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.hardware.Camera.ShutterCallback;
@@ -70,8 +71,29 @@ public class CameraHolder {
         doOpenCamera(callback);
     }
 
+
+
+    public void doStartPreview(SurfaceTexture surfaceTexture,float previreRate){
+        Log.e(TAG, "doStartPreview...");
+        if (isPreviewing) {
+            mCamera.stopPreview();
+            return;
+        }
+        try {
+            mCamera.setPreviewTexture(surfaceTexture);
+            //设置预览回调
+            mCamera.setPreviewCallback(mPreviewCallBack);
+            //开启预览
+            mCamera.startPreview();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        initCamera(previreRate);
+    }
+
     /**
-     * 开启预览
+     * 使用SurfaceView开启预览
      *
      * @param holder
      * @param previewRate
@@ -82,6 +104,20 @@ public class CameraHolder {
             mCamera.stopPreview();
             return;
         }
+        try {
+            mCamera.setPreviewDisplay(holder);
+            //设置预览回调
+            mCamera.setPreviewCallback(mPreviewCallBack);
+            //开启预览
+            mCamera.startPreview();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        initCamera(previewRate);
+    }
+
+    private void initCamera(float previewRate) {
         if (mCamera != null) {
 
             mParams = mCamera.getParameters();
@@ -109,10 +145,12 @@ public class CameraHolder {
             // 相机硬件提供的预览帧数据尺寸
             Camera.Size previewSize = CamParaUtil.getInstance().getPropPreviewSize(
                     mParams.getSupportedPreviewSizes(), previewRate, 1280);
-//            mParams.setPreviewSize(1280,720);
+            mParams.setPreviewSize(previewSize.width,previewSize.height);
 
 
-            // 设置相机预览方向
+            // 设置相机预览方向     预览方向的设置是根据当前window的rotation来设置的，
+            // 即((WindowManager)displayView.getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getRotation()的值。
+            // 在Surface.ROTATION_0和Surface.ROTATION_180时，Camera设置displayOrientation为90，否则设置为0。
             mCamera.setDisplayOrientation(90);
 
             CamParaUtil.getInstance().printSupportFocusMode(mParams);
@@ -128,16 +166,6 @@ public class CameraHolder {
             }
             mCamera.setParameters(mParams);
 
-            try {
-                mCamera.setPreviewDisplay(holder);
-                //设置预览回调
-                mCamera.setPreviewCallback(mPreviewCallBack);
-                //开启预览
-                mCamera.startPreview();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
 
             isPreviewing = true;
             mPreviwRate = previewRate;
