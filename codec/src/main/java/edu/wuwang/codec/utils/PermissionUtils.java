@@ -27,10 +27,10 @@ public class PermissionUtils {
         }
     }
 
-    public static void onRequestPermissionsResult(boolean isReq,int[] grantResults,Runnable
-        okRun,Runnable deniRun){
-        if(isReq){
-            if (grantResults.length > 0&&grantResults[0]==PackageManager.PERMISSION_GRANTED) {
+    public static void onRequestPermissionsResult(boolean isReq, int[] grantResults, Runnable
+            okRun, Runnable deniRun) {
+        if (isReq) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 okRun.run();
             } else {
                 deniRun.run();

@@ -164,11 +164,20 @@ public class CameraHolder {
             if (focusModes.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)) {
                 mParams.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
             }
+
             mCamera.setParameters(mParams);
 
 
             isPreviewing = true;
             mPreviwRate = previewRate;
+
+            try {
+                mCamera.cancelAutoFocus();
+                // 2如果要实现连续的自动对焦，这一句必须加上
+                // set the callback and start the preview.
+            } catch (Exception ignored) {
+
+            }
 
             mParams = mCamera.getParameters(); //重新get一次
             Log.i(TAG, "最终设置:PreviewSize--With = " + mParams.getPreviewSize().width

@@ -212,13 +212,17 @@ public class CameraActivity extends AppCompatActivity implements FrameCallback {
     @Override
     protected void onResume() {
         super.onResume();
-        mCameraView.onResume();
+        if (mCameraView != null) {
+            mCameraView.onResume();
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        mCameraView.onPause();
+        if(mCameraView != null){
+            mCameraView.onPause();
+        }
     }
 
     @Override

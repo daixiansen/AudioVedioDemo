@@ -6,7 +6,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/mCameraView" />
-    <edu.wuwang.codec.camera.CircularProgressView android:layout_width="88dp"
+    <edu.wuwang.codec.camera.CircularProgressView
+        android:layout_width="88dp"
         android:layout_height="88dp"
         android:background="@drawable/bt_capture"
         android:clickable="true"
